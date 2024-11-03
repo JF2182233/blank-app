@@ -2,16 +2,16 @@ import streamlit as st
 import numpy as np
 
 # Page title
-st.title("Floorboard Slicing Calculator")
+st.title("Jeppeleppes takstuvning 🎈")
 
 # Input field for polygon coordinates (as comma-separated pairs)
 polygon_input = st.text_area(
-    "Enter the coordinates of the polygon vertices as comma-separated pairs (e.g., 0,0 0,10 20,10 20,0 0,14 10,4 0,6):",
+    "Ange koordinaterna för polygonens hörn som kommaseparerade par (t.ex. 0,0 0,10 20,10 20,0 0,14 10,4 0,6):",
     value="0,0 0,10 20,10 20,0 0,14 10,4 0,6"
 )
 
 # Input field for slice width
-slice_width = st.number_input("Width of each floorboard slice (mm)", value=1.0, step=0.1)
+slice_width = st.number_input("Bredd i mm för varje plåt", value=1.0, step=0.1)
 
 # Button to trigger the calculation
 if st.button("Calculate Floorboard Heights"):
