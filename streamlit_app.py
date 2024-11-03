@@ -58,36 +58,22 @@ if st.button("Räkna ut vad som behövs"):
         max_x = max(x for x, _ in vertices)
 
         for i in range(int(max_x / slice_width)):
-            x_left = i * slice_width
-            x_right = (i + 1) * slice_width
+            x_pos = i * slice_width
+            y_intersections = []
 
-            y_intersections_left = []
-            y_intersections_right = []
-
-            # Calculate intersections at the left boundary
+            # Calculate intersections at the current slice boundary
             for edge in edges:
-                intersection = find_intersection(x_left, edge[0], edge[1])
+                intersection = find_intersection(x_pos, edge[0], edge[1])
                 if intersection is not None:
                     if isinstance(intersection, tuple):  # Vertical segment case
-                        y_intersections_left.extend(intersection)
+                        y_intersections.extend(intersection)
                     else:
-                        y_intersections_left.append(intersection)
-
-            # Calculate intersections at the right boundary
-            for edge in edges:
-                intersection = find_intersection(x_right, edge[0], edge[1])
-                if intersection is not None:
-                    if isinstance(intersection, tuple):  # Vertical segment case
-                        y_intersections_right.extend(intersection)
-                    else:
-                        y_intersections_right.append(intersection)
+                        y_intersections.append(intersection)
 
             # Determine the height for this slice
-            if y_intersections_left and y_intersections_right:
-                max_height_left = max(y_intersections_left) - min(y_intersections_left)
-                max_height_right = max(y_intersections_right) - min(y_intersections_right)
-                max_height = max(max_height_left, max_height_right)
-                floorboard_heights.append((x_left, max_height))
+            if y_intersections:
+                max_height = max(y_intersections) - min(y_intersections)
+                floorboard_heights.append((x_pos, max_height))
 
         # Display the calculated floorboard heights
         st.write("Plåt, positioner och längd:")
