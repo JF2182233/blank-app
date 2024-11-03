@@ -41,7 +41,7 @@ edges = [
 ]
 
 # Input for slice width
-slice_width = st.number_input("Bredd i mm för varje plåt:", value=2.0, step=0.1)
+slice_width = st.number_input("Bredd i mm för varje plåt:", value=0,5, step=0.1)
 
 # Button to trigger calculation
 if st.button("Räkna ut vad som behövs"):
