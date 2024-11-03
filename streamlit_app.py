@@ -69,4 +69,31 @@ if st.button("Räkna ut vad som behövs"):
                 intersection = find_intersection(x_left, edge[0], edge[1])
                 if intersection is not None:
                     if isinstance(intersection, tuple):  # Vertical segment case
-            
+                        y_intersections_left.extend(intersection)
+                    else:
+                        y_intersections_left.append(intersection)
+
+            # Calculate intersections at the right boundary
+            for edge in edges:
+                intersection = find_intersection(x_right, edge[0], edge[1])
+                if intersection is not None:
+                    if isinstance(intersection, tuple):  # Vertical segment case
+                        y_intersections_right.extend(intersection)
+                    else:
+                        y_intersections_right.append(intersection)
+
+            # Determine the height for this slice
+            if y_intersections_left and y_intersections_right:
+                max_height_left = max(y_intersections_left) - min(y_intersections_left)
+                max_height_right = max(y_intersections_right) - min(y_intersections_right)
+                max_height = max(max_height_left, max_height_right)
+                floorboard_heights.append((x_left, max_height))
+
+        # Display the calculated floorboard heights
+        st.write("Plåt, positioner och längd:")
+        for x_start, height in floorboard_heights:
+            st.write(f"Plåt börjar vid x = {x_start:.1f} mm, höjd = {height:.2f} mm")
+    
+    except Exception as e:
+        st.error("Error parsing polygon coordinates. Please ensure they are formatted correctly.")
+        st.error(f"Details: {e}")
