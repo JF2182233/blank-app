@@ -2,19 +2,16 @@ import streamlit as st
 import numpy as np
 
 # Page title
-st.title("Jeppeleppes takstuvning 🎈")
+st.title("Jeppeleppes Takstuvning 🎈")
 
-import streamlit as st
-
-# Replace with the actual raw image URL
+# Display the reference image (replace the URL if necessary)
 image_url = "https://raw.githubusercontent.com/JF2182233/blank-app/refs/heads/main/cords-tak-3.png"
-
 st.image(image_url)
 
 # Input field for polygon coordinates (as comma-separated pairs)
 polygon_input = st.text_area(
     "Ange koordinaterna för polygonens hörn som kommaseparerade par (t.ex. 0,0 0,10 20,10 20,0 0,14 10,4 0,6):",
-    value="0,0 0,10 20,10 20,0 0,14 10,4 0,6"
+    value="0,0 10,10 20,10 20,0 6,0 10,5.7 14,0"
 )
 
 # Input field for slice width
@@ -30,40 +27,65 @@ if st.button("Räkna ut vad som behövs"):
             for point in polygon_input.split()
         ]
         
-        # Define a helper function to find the intersection height at a given x-coordinate
+        # Define edges based on parsed vertices
+        edges = [(vertices[i], vertices[(i + 1) % len(vertices)]) for i in range(len(vertices))]
+
+        # Function to find the intersection of a vertical line with a line segment
         def find_intersection(x, p1, p2):
-            # Line segment slope (dy/dx) and intercept calculations
-            if p2[0] != p1[0]:  # Avoid division by zero for vertical lines
-                slope = (p2[1] - p1[1]) / (p2[0] - p1[0])
-                y_intercept = p1[1] - slope * p1[0]
-                y_at_x = slope * x + y_intercept
-            else:
-                y_at_x = max(p1[1], p2[1])  # Use the higher y for vertical lines
-            return y_at_x if min(p1[0], p2[0]) <= x <= max(p1[0], p2[0]) else None
-        
-        # List to store floorboard heights
+            x1, y1 = p1
+            x2, y2 = p2
+
+            # Check if the line segment is vertical
+            if x1 == x2:
+                if x == x1:  # If the slice is on this vertical segment
+                    return min(y1, y2), max(y1, y2)
+                return None  # No intersection if the vertical slice doesn't match segment
+
+            # Calculate slope and intercept
+            slope = (y2 - y1) / (x2 - x1)
+            intercept = y1 - slope * x1
+
+            # Calculate the y-coordinate of the intersection
+            y = slope * x + intercept
+
+            # Check if the intersection is within the bounds of the segment
+            if min(x1, x2) <= x <= max(x1, x2):
+                return y
+            return None
+
+        # Loop through each slice position and calculate floorboard heights
         floorboard_heights = []
-        
-        # Loop through each x position from left to right in increments of slice_width
-        x_positions = np.arange(0, max(x for x, _ in vertices), slice_width)
-        
-        for x_start in x_positions:
-            y_intersections = []
-            
-            # Find intersections with each polygon edge
-            for i in range(len(vertices)):
-                p1 = vertices[i]
-                p2 = vertices[(i + 1) % len(vertices)]
-                y = find_intersection(x_start, p1, p2)
-                
-                if y is not None:
-                    y_intersections.append(y)
-            
-            # If we have intersections, calculate height of the floorboard at this x position
-            if len(y_intersections) >= 2:
-                height = abs(max(y_intersections) - min(y_intersections))
-                floorboard_heights.append((x_start, height))
-        
+        max_x = max(x for x, _ in vertices)
+
+        for i in range(int(max_x / slice_width)):
+            x_left = i * slice_width
+            x_right = (i + 1) * slice_width
+
+            y_min_left, y_max_left = float('inf'), float('-inf')
+            y_min_right, y_max_right = float('inf'), float('-inf')
+
+            # Calculate left intersection heights
+            for edge in edges:
+                intersection = find_intersection(x_left, edge[0], edge[1])
+                if intersection is not None:
+                    if isinstance(intersection, tuple):  # Vertical segment case
+                        y_min_left, y_max_left = min(y_min_left, intersection[0]), max(y_max_left, intersection[1])
+                    else:
+                        y_min_left, y_max_left = min(y_min_left, intersection), max(y_max_left, intersection)
+
+            # Calculate right intersection heights
+            for edge in edges:
+                intersection = find_intersection(x_right, edge[0], edge[1])
+                if intersection is not None:
+                    if isinstance(intersection, tuple):  # Vertical segment case
+                        y_min_right, y_max_right = min(y_min_right, intersection[0]), max(y_max_right, intersection[1])
+                    else:
+                        y_min_right, y_max_right = min(y_min_right, intersection), max(y_max_right, intersection)
+
+            # Determine the maximum height for this floorboard slice
+            max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
+            floorboard_heights.append((x_left, max_height))
+
         # Display the calculated floorboard heights
         st.write("Plåt, positioner och längd:")
         for x_start, height in floorboard_heights:
