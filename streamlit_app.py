@@ -11,33 +11,33 @@ st.image(image_url)
 # Input fields for polygon coordinates and slice width
 st.write("Ange polygonens hörnkoordinater i formatet (x, y):")
 
-# Define the default vertices for the polygon as per the original code
+# Define the default vertices for the polygon with numbers instead of letters
 default_vertices = {
-    'A': (0, 0),
-    'B': (0, 10),
-    'C': (20, 10),
-    'D': (20, 0),
-    'G': (6, 0),
-    'F': (10, 5.7),  # Approximate position of the peak of the triangle
-    'E': (14, 0)
+    1: (0, 0),
+    2: (0, 10),
+    3: (20, 10),
+    4: (20, 0),
+    5: (6, 0),
+    6: (10, 5.7),  # Approximate position of the peak of the triangle
+    7: (14, 0)
 }
 
 # Display inputs for each vertex
 vertices = {}
-for point, (default_x, default_y) in default_vertices.items():
-    x = st.number_input(f"{point} x:", value=float(default_x), step=0.1)
-    y = st.number_input(f"{point} y:", value=float(default_y), step=0.1)
-    vertices[point] = (x, y)
+for i, (default_x, default_y) in default_vertices.items():
+    x = st.number_input(f"{i} x:", value=float(default_x), step=0.1)
+    y = st.number_input(f"{i} y:", value=float(default_y), step=0.1)
+    vertices[i] = (x, y)
 
-# Define the polygon edges based on points
+# Define the polygon edges based on numbered points
 edges = [
-    ('A', 'B'),
-    ('B', 'C'),
-    ('C', 'D'),
-    ('D', 'E'),
-    ('E', 'F'),
-    ('F', 'G'),
-    ('G', 'A')
+    (1, 2),
+    (2, 3),
+    (3, 4),
+    (4, 7),
+    (7, 6),
+    (6, 5),
+    (5, 1)
 ]
 
 # Input for slice width
@@ -71,7 +71,7 @@ if st.button("Räkna ut vad som behövs"):
     # Calculate floorboard heights for each slice position
     floorboard_heights = []
 
-    for i in range(int(vertices['C'][0] / slice_width)):
+    for i in range(int(vertices[3][0] / slice_width)):
         x_left = i * slice_width
         x_right = (i + 1) * slice_width
 
