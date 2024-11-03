@@ -67,7 +67,7 @@ if st.button("Räkna ut vad som behövs"):
         # Display the calculated floorboard heights
         st.write("Floorboard positions and heights:")
         for x_start, height in floorboard_heights:
-            st.write(f"Floorboard starting at x = {x_start:.1f} mm, height = {height:.2f} mm")
+            st.write(f"Plåt börjar vid x = {x_start:.1f} mm, höjd = {height:.2f} mm")
     
     except Exception as e:
         st.error("Error parsing polygon coordinates. Please ensure they are formatted correctly.")
