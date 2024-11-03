@@ -21,7 +21,7 @@ polygon_input = st.text_area(
 slice_width = st.number_input("Bredd i mm för varje plåt", value=1.0, step=0.1)
 
 # Button to trigger the calculation
-if st.button("Calculate Floorboard Heights"):
+if st.button("Räkna ut vad som behövs"):
 
     # Parse the polygon vertices from the input text
     try:
