@@ -4,6 +4,13 @@ import numpy as np
 # Page title
 st.title("Jeppeleppes takstuvning 🎈")
 
+import streamlit as st
+
+# Replace with the actual raw image URL
+image_url = "https://github.com/JF2182233/blank-app/blob/main/cords-tak-3.png"
+
+st.image(image_url)
+
 # Input field for polygon coordinates (as comma-separated pairs)
 polygon_input = st.text_area(
     "Ange koordinaterna för polygonens hörn som kommaseparerade par (t.ex. 0,0 0,10 20,10 20,0 0,14 10,4 0,6):",
