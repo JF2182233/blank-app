@@ -7,7 +7,7 @@ st.title("Jeppeleppes takstuvning 🎈")
 import streamlit as st
 
 # Replace with the actual raw image URL
-image_url = "https://github.com/JF2182233/blank-app/blob/main/cords-tak-3.png"
+image_url = "https://raw.githubusercontent.com/JF2182233/blank-app/refs/heads/main/cords-tak-3.png"
 
 st.image(image_url)
 
