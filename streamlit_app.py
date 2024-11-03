@@ -65,7 +65,7 @@ if st.button("Räkna ut vad som behövs"):
                 floorboard_heights.append((x_start, height))
         
         # Display the calculated floorboard heights
-        st.write("Floorboard positions and heights:")
+        st.write("Plåt, positioner och längd:")
         for x_start, height in floorboard_heights:
             st.write(f"Plåt börjar vid x = {x_start:.1f} mm, höjd = {height:.2f} mm")
     
