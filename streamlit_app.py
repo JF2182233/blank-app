@@ -98,9 +98,17 @@ if st.button("Räkna ut vad som behövs"):
 
         # Determine the maximum height for this floorboard
         max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
-        floorboard_heights.append((x_left, max_height))
+        floorboard_heights.append((x_left, round(max_height, 2)))  # Round to 2 decimal places
 
-    # Display the calculated floorboard heights in Swedish
-    st.write("Plåt, positioner och längd:")
-    for x_start, height in floorboard_heights:
-        st.write(f"Plåt börjar vid x = {x_start:.1f} mm, höjd = {height:.2f} mm")
+    # Aggregate heights and count occurrences
+    height_counts = {}
+    for _, height in floorboard_heights:
+        if height in height_counts:
+            height_counts[height] += 1
+        else:
+            height_counts[height] = 1
+
+    # Display the aggregated floorboard heights in Swedish
+    st.write("Plåt, antal och höjd:")
+    for height, count in sorted(height_counts.items()):
+        st.write(f"{count}x Plåt med höjd = {height:.2f} mm")
