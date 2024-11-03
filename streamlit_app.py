@@ -11,7 +11,7 @@ st.image(image_url)
 # Input field for polygon coordinates (as comma-separated pairs)
 polygon_input = st.text_area(
     "Ange koordinaterna för polygonens hörn som kommaseparerade par (t.ex. 0,0 0,10 20,10 20,0 0,14 10,4 0,6):",
-    value="0,0 10,10 20,10 20,0 6,0 10,5.7 14,0"
+    value="0,0 0,10 20,10 20,0 6,0 10,5.7 14,0"
 )
 
 # Input field for slice width
@@ -38,17 +38,17 @@ if st.button("Räkna ut vad som behövs"):
             # Check if the line segment is vertical
             if x1 == x2:
                 if x == x1:  # If the slice is on this vertical segment
-                    return min(y1, y2), max(y1, y2)
+                    return (min(y1, y2), max(y1, y2))  # Return the range as a tuple
                 return None  # No intersection if the vertical slice doesn't match segment
 
-            # Calculate slope and intercept
+            # Calculate the slope and intercept for the non-vertical line
             slope = (y2 - y1) / (x2 - x1)
             intercept = y1 - slope * x1
 
             # Calculate the y-coordinate of the intersection
             y = slope * x + intercept
 
-            # Check if the intersection is within the bounds of the segment
+            # Check if the intersection point (x, y) is within the bounds of the segment
             if min(x1, x2) <= x <= max(x1, x2):
                 return y
             return None
@@ -61,36 +61,12 @@ if st.button("Räkna ut vad som behövs"):
             x_left = i * slice_width
             x_right = (i + 1) * slice_width
 
-            y_min_left, y_max_left = float('inf'), float('-inf')
-            y_min_right, y_max_right = float('inf'), float('-inf')
+            y_intersections_left = []
+            y_intersections_right = []
 
-            # Calculate left intersection heights
+            # Calculate intersections at the left boundary
             for edge in edges:
                 intersection = find_intersection(x_left, edge[0], edge[1])
                 if intersection is not None:
                     if isinstance(intersection, tuple):  # Vertical segment case
-                        y_min_left, y_max_left = min(y_min_left, intersection[0]), max(y_max_left, intersection[1])
-                    else:
-                        y_min_left, y_max_left = min(y_min_left, intersection), max(y_max_left, intersection)
-
-            # Calculate right intersection heights
-            for edge in edges:
-                intersection = find_intersection(x_right, edge[0], edge[1])
-                if intersection is not None:
-                    if isinstance(intersection, tuple):  # Vertical segment case
-                        y_min_right, y_max_right = min(y_min_right, intersection[0]), max(y_max_right, intersection[1])
-                    else:
-                        y_min_right, y_max_right = min(y_min_right, intersection), max(y_max_right, intersection)
-
-            # Determine the maximum height for this floorboard slice
-            max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
-            floorboard_heights.append((x_left, max_height))
-
-        # Display the calculated floorboard heights
-        st.write("Plåt, positioner och längd:")
-        for x_start, height in floorboard_heights:
-            st.write(f"Plåt börjar vid x = {x_start:.1f} mm, höjd = {height:.2f} mm")
-    
-    except Exception as e:
-        st.error("Error parsing polygon coordinates. Please ensure they are formatted correctly.")
-        st.error(f"Details: {e}")
+            
