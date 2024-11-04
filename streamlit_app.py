@@ -12,8 +12,8 @@ st.image(image_url)
 # Input fields for polygon edge lengths and angles
 st.write("Ange längder och vinklar för polygonens kanter:")
 
-# Define default values for edge lengths and angles (replace these with actual lengths and angles as required)
-default_lengths = [10, 20, 10, 8, 6, 5.7, 6]  # Example values for each edge
+# Define default values for edge lengths and angles
+default_lengths = [10, 20, 10, 8, 6, 5.7, 6]  # Example lengths for each edge
 default_angles = [90, 0, 90, -45, 45, 0]  # Example relative angles in degrees
 
 # User inputs for edge lengths and angles
@@ -25,11 +25,11 @@ for i, default_length in enumerate(default_lengths, start=1):
 angles = []
 for i, default_angle in enumerate(default_angles, start=1):
     angle = st.number_input(f"Vinkel för hörn {i} (°):", value=float(default_angle), step=0.1)
-    angles.append(math.radians(angle))  # Convert angles to radians for calculations
+    angles.append(math.radians(angle))  # Convert angles to radians
 
-# Reconstruct the coordinates of the polygon vertices from the lengths and angles
-vertices = {1: (0, 0)}  # Start with the first vertex at the origin
-current_angle = 0  # Start angle, assume horizontal
+# Reconstruct the coordinates of the polygon vertices from lengths and angles
+vertices = {1: (0, 0)}  # Start with the first vertex at (0, 0)
+current_angle = 0  # Initialize angle
 
 for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
     x_prev, y_prev = vertices[i - 1]
@@ -37,6 +37,11 @@ for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
     x = x_prev + length * math.cos(current_angle)
     y = y_prev + length * math.sin(current_angle)
     vertices[i] = (x, y)
+
+# Display the reconstructed vertices for debugging
+st.write("Reconstructed vertices:")
+for i, (x, y) in vertices.items():
+    st.write(f"Vertex {i}: ({x:.2f}, {y:.2f})")
 
 # Define edges by connecting vertices in sequence, closing the loop at the end
 edges = [(i, i + 1) for i in range(1, len(vertices))]
@@ -99,8 +104,14 @@ if st.button("Räkna ut vad som behövs"):
                     y_min_right, y_max_right = min(y_min_right, intersection), max(y_max_right, intersection)
 
         # Determine the maximum height for this floorboard
-        max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
-        floorboard_heights.append((x_left, round(max_height, 2)))  # Round to 2 decimal places
+        if y_max_left > y_min_left and y_max_right > y_min_right:
+            max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
+            floorboard_heights.append((x_left, round(max_height, 2)))  # Round to 2 decimal places
+
+    # Debug output to check calculated floorboard heights
+    st.write("Debug: Floorboard Heights")
+    for x_start, height in floorboard_heights:
+        st.write(f"x = {x_start:.2f} mm, height = {height:.2f} mm")
 
     # Aggregate heights and count occurrences
     height_counts = {}
