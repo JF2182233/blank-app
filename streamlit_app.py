@@ -71,53 +71,51 @@ if st.button("Räkna ut vad som behövs"):
             return y
         return None
 
-# Calculate floorboard heights for each slice position
-floorboard_heights = []
+    # Calculate floorboard heights for each slice position
+    floorboard_heights = []
 
-for i in range(int(vertices[3][0] / slice_width)):
-    x_left = i * slice_width
-    x_right = (i + 1) * slice_width
+    for i in range(int(vertices[3][0] / slice_width)):
+        x_left = i * slice_width
+        x_right = (i + 1) * slice_width
 
-    y_min_left, y_max_left = float('inf'), float('-inf')
-    y_min_right, y_max_right = float('inf'), float('-inf')
+        y_min_left, y_max_left = float('inf'), float('-inf')
+        y_min_right, y_max_right = float('inf'), float('-inf')
 
-    # Calculate left intersection heights
-    for edge in edges:
-        intersection = find_intersection(x_left, edge[0], edge[1])
-        if intersection is not None:
-            if isinstance(intersection, tuple):  # Vertical segment case
-                y_min_left, y_max_left = min(y_min_left, intersection[0]), max(y_max_left, intersection[1])
-            else:
-                y_min_left, y_max_left = min(y_min_left, intersection), max(y_max_left, intersection)
+        # Calculate left intersection heights
+        for edge in edges:
+            intersection = find_intersection(x_left, edge[0], edge[1])
+            if intersection is not None:
+                if isinstance(intersection, tuple):  # Vertical segment case
+                    y_min_left, y_max_left = min(y_min_left, intersection[0]), max(y_max_left, intersection[1])
+                else:
+                    y_min_left, y_max_left = min(y_min_left, intersection), max(y_max_left, intersection)
 
-    # Calculate right intersection heights
-    for edge in edges:
-        intersection = find_intersection(x_right, edge[0], edge[1])
-        if intersection is not None:
-            if isinstance(intersection, tuple):  # Vertical segment case
-                y_min_right, y_max_right = min(y_min_right, intersection[0]), max(y_max_right, intersection[1])
-            else:
-                y_min_right, y_max_right = min(y_min_right, intersection), max(y_max_right, intersection)
+        # Calculate right intersection heights
+        for edge in edges:
+            intersection = find_intersection(x_right, edge[0], edge[1])
+            if intersection is not None:
+                if isinstance(intersection, tuple):  # Vertical segment case
+                    y_min_right, y_max_right = min(y_min_right, intersection[0]), max(y_max_right, intersection[1])
+                else:
+                    y_min_right, y_max_right = min(y_min_right, intersection), max(y_max_right, intersection)
 
-    # Determine the maximum height for this floorboard
-    max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
-    floorboard_heights.append((x_left, round(max_height, 2)))  # Round to 2 decimal places
-
+        # Determine the maximum height for this floorboard
+        max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
+        floorboard_heights.append((x_left, round(max_height, 2)))  # Round to 2 decimal places
 
     # Debug output to show calculated floorboard heights
     st.write("Debug: Floorboard Heights")
     st.write(floorboard_heights)
 
-# Aggregate heights and count occurrences
-height_counts = {}
-for _, height in floorboard_heights:
-    if height in height_counts:
-        height_counts[height] += 1
-    else:
-        height_counts[height] = 1
+    # Aggregate heights and count occurrences
+    height_counts = {}
+    for _, height in floorboard_heights:
+        if height in height_counts:
+            height_counts[height] += 1
+        else:
+            height_counts[height] = 1
 
-# Display the aggregated floorboard heights in Swedish
-st.write("Plåt, antal och höjd:")
-for height, count in sorted(height_counts.items()):
-    st.write(f"{count}x Plåt med höjd = {height:.2f} mm")
-
+    # Display the aggregated floorboard heights in Swedish
+    st.write("Plåt, antal och höjd:")
+    for height, count in sorted(height_counts.items()):
+        st.write(f"{count}x Plåt med höjd = {height:.2f} mm")
