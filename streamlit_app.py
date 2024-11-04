@@ -108,13 +108,14 @@ if st.button("Räkna ut vad som behövs"):
     st.write("Debug: Floorboard Heights")
     st.write(floorboard_heights)
 
-    # Aggregate heights and count occurrences
-    height_counts = {}
-    for _, height in floorboard_heights:
-        if height in height_counts:
-            height_counts[height] += 1
-        else:
-            height_counts[height] = 1
+# Aggregate heights with rounding for better grouping
+height_counts = {}
+for _, height in floorboard_heights:
+    rounded_height = round(height * 2) / 2  # Round to the nearest 0.5 mm
+    if rounded_height in height_counts:
+        height_counts[rounded_height] += 1
+    else:
+        height_counts[rounded_height] = 1
 
     # Display the aggregated floorboard heights in Swedish
     st.write("Plåt, antal och höjd:")
