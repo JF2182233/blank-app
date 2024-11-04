@@ -29,14 +29,20 @@ for i, default_angle in enumerate(default_angles, start=1):
 
 # Reconstruct the coordinates of the polygon vertices from lengths and angles
 vertices = {1: (0, 0)}  # Start with the first vertex at (0, 0)
-current_angle = 0  # Initialize angle
+current_angle = 0  # Initialize angle in the positive x-axis direction
 
 for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
     x_prev, y_prev = vertices[i - 1]
-    current_angle += angle  # Accumulate the angle
+    current_angle += angle  # Adjust current angle by the input angle (relative turn)
     x = x_prev + length * math.cos(current_angle)
     y = y_prev + length * math.sin(current_angle)
     vertices[i] = (x, y)
+
+# Display the reconstructed vertices for debugging
+st.write("Reconstructed vertices:")
+for i, (x, y) in vertices.items():
+    st.write(f"Vertex {i}: ({x:.2f}, {y:.2f})")
+
 
 # Display the reconstructed vertices for debugging
 st.write("Reconstructed vertices:")
