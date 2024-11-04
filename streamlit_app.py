@@ -9,55 +9,45 @@ st.title("Jeppeleppes Takstuvning 🎈")
 image_url = "https://raw.githubusercontent.com/JF2182233/blank-app/refs/heads/main/cords-tak-3.png"
 st.image(image_url)
 
-# Input fields for polygon edge lengths and angles
-st.write("Ange längder och vinklar för polygonens kanter:")
+# Input fields for polygon segment lengths and angles
+st.write("Ange längd och vinkel mellan hörn:")
 
-# Define default values for edge lengths and angles
-default_lengths = [10, 20, 10, 8, 6, 5.7, 6]  # Example lengths for each edge
-default_angles = [90, 0, 90, -45, 45, 0]  # Example relative angles in degrees
+# Define the default lengths and angles between vertices
+default_lengths = [10, 20, 10, 8, 8, 6]
+default_angles = [math.radians(90), 0, math.radians(-90), math.radians(45), math.radians(0), math.radians(-45)]
 
-# User inputs for edge lengths and angles
-lengths = []
-for i, default_length in enumerate(default_lengths, start=1):
-    length = st.number_input(f"Längd för kant {i} (mm):", value=float(default_length), step=0.1)
-    lengths.append(length)
-
-angles = []
-for i, default_angle in enumerate(default_angles, start=1):
-    angle = st.number_input(f"Vinkel för hörn {i} (°):", value=float(default_angle), step=0.1)
-    angles.append(math.radians(angle))  # Convert angles to radians
-
-# Reconstruct the coordinates of the polygon vertices from lengths and angles
-vertices = {1: (0, 0)}  # Start with the first vertex at (0, 0)
-current_angle = 0  # Initialize angle in the positive x-axis direction
-
-for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
-    x_prev, y_prev = vertices[i - 1]
-    current_angle += angle  # Adjust current angle by the input angle (relative turn)
-    x = x_prev + length * math.cos(current_angle)
-    y = y_prev + length * math.sin(current_angle)
-    vertices[i] = (x, y)
-
-# Display the reconstructed vertices for debugging
-st.write("Reconstructed vertices:")
-for i, (x, y) in vertices.items():
-    st.write(f"Vertex {i}: ({x:.2f}, {y:.2f})")
-
-
-# Display the reconstructed vertices for debugging
-st.write("Reconstructed vertices:")
-for i, (x, y) in vertices.items():
-    st.write(f"Vertex {i}: ({x:.2f}, {y:.2f})")
-
-# Define edges by connecting vertices in sequence, closing the loop at the end
-edges = [(i, i + 1) for i in range(1, len(vertices))]
-edges[-1] = (len(vertices), 1)  # Close the polygon
+# Input lengths and angles
+lengths = [st.number_input(f"Längd {i+1}-{i+2}:", value=float(length), step=0.1) for i, length in enumerate(default_lengths)]
+angles = [st.number_input(f"Vinkel {i+1}-{i+2} (i grader):", value=float(math.degrees(angle)), step=1.0) for i, angle in enumerate(default_angles)]
+angles = [math.radians(angle) for angle in angles]  # Convert degrees to radians for calculation
 
 # Input for slice width
 slice_width = st.number_input("Bredd i mm för varje plåt:", value=0.5, step=0.1)
 
 # Button to trigger calculation
 if st.button("Räkna ut vad som behövs"):
+
+    # Reconstruct the coordinates of the polygon vertices from lengths and angles
+    vertices = {1: (0, 0)}  # Start with the first vertex at (0, 0)
+    current_angle = 0  # Initialize angle in the positive x-axis direction
+
+    for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
+        x_prev, y_prev = vertices[i - 1]
+        current_angle += angle  # Adjust current angle by the input angle (relative turn)
+        x = x_prev + length * math.cos(current_angle)
+        y = y_prev + length * math.sin(current_angle)
+        vertices[i] = (x, y)
+
+    # Display the reconstructed vertices for debugging
+    st.write("Reconstructed vertices:")
+    for i, (x, y) in vertices.items():
+        st.write(f"Vertex {i}: ({x:.2f}, {y:.2f})")
+
+    # Define edges based on reconstructed vertices
+    edges = [(i, i + 1) for i in range(1, len(vertices))] + [(len(vertices), 1)]  # Close the polygon
+
+    # Debug message
+    st.write("Debug: Calculating floorboard heights...")
 
     # Function to find the intersection of a vertical line with a line segment
     def find_intersection(x, p1, p2):
@@ -84,7 +74,7 @@ if st.button("Räkna ut vad som behövs"):
     # Calculate floorboard heights for each slice position
     floorboard_heights = []
 
-    for i in range(int(max(x for x, y in vertices.values()) / slice_width)):
+    for i in range(int(vertices[len(vertices)][0] / slice_width)):
         x_left = i * slice_width
         x_right = (i + 1) * slice_width
 
@@ -110,14 +100,13 @@ if st.button("Räkna ut vad som behövs"):
                     y_min_right, y_max_right = min(y_min_right, intersection), max(y_max_right, intersection)
 
         # Determine the maximum height for this floorboard
-        if y_max_left > y_min_left and y_max_right > y_min_right:
+        if y_max_left != float('-inf') and y_min_left != float('inf'):
             max_height = max(y_max_left - y_min_left, y_max_right - y_min_right)
             floorboard_heights.append((x_left, round(max_height, 2)))  # Round to 2 decimal places
 
-    # Debug output to check calculated floorboard heights
+    # Debug output to show calculated floorboard heights
     st.write("Debug: Floorboard Heights")
-    for x_start, height in floorboard_heights:
-        st.write(f"x = {x_start:.2f} mm, height = {height:.2f} mm")
+    st.write(floorboard_heights)
 
     # Aggregate heights and count occurrences
     height_counts = {}
