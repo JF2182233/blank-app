@@ -40,14 +40,15 @@ if st.button("Calculate Floorboard Heights"):
     def find_intersection(x, p1, p2):
         # Function remains the same
 
-    # Calculate floorboard heights for each slice position
-        floorboard_heights = []
+    # Initialize list to store floorboard heights
+    floorboard_heights = []
 
+    # Calculate floorboard heights for each slice position
     for i in range(int(vertices[3][0] / slice_width)):
         x_left = i * slice_width
         x_right = (i + 1) * slice_width
 
-        # Remaining code remains the same
+        # Perform calculations to determine floorboard heights and append to the list
 
     # Aggregate heights and count occurrences
     height_counts = {}
