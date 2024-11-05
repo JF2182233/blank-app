@@ -27,21 +27,36 @@ slice_width = st.number_input("Bredd i mm för varje plåt:", value=0.5, step=0.
 # Button to trigger calculation
 if st.button("Räkna ut vad som behövs"):
 
-    # Reconstruct the coordinates of the polygon vertices from lengths and angles
-    vertices = {1: (0, 0)}  # Start with the first vertex at (0, 0)
-    current_angle = 0  # Initialize angle in the positive x-axis direction
+# Reconstruct the vertices from side lengths
+vertices = {}
+vertices[1] = (0, 0)  # Starting at origin
 
-    for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
-        x_prev, y_prev = vertices[i - 1]
-        current_angle += angle  # Adjust current angle by the input angle (relative turn)
-        x = x_prev + length * math.cos(current_angle)
-        y = y_prev + length * math.sin(current_angle)
-        vertices[i] = (x, y)
+# Initialize coordinates
+x, y = vertices[1]
 
-    # Display the reconstructed vertices for debugging
-    st.write("Reconstructed vertices:")
-    for i, (x, y) in vertices.items():
-        st.write(f"Vertex {i}: ({x:.2f}, {y:.2f})")
+# Assign vertices using angles and lengths
+angles = [0, 90, 0, -45, 0, 45]  # Relative angles in degrees between edges
+lengths = [
+    side_1_2,
+    side_2_3,
+    side_3_4,
+    side_4_5,
+    side_5_6,
+    side_6_7
+]
+
+# Iteratively calculate positions based on lengths and angles
+for i, (length, angle) in enumerate(zip(lengths, angles), start=2):
+    angle_radians = np.radians(angle)
+    x += length * np.cos(angle_radians)
+    y += length * np.sin(angle_radians)
+    vertices[i] = (round(x, 2), round(y, 2))
+
+# Display vertices for debugging
+st.write("Reconstructed vertices:")
+for i, (vx, vy) in vertices.items():
+    st.write(f"Vertex {i}: ({vx:.2f}, {vy:.2f})")
+
 
     # Define edges based on reconstructed vertices
     edges = [(i, i + 1) for i in range(1, len(vertices))] + [(len(vertices), 1)]  # Close the polygon
@@ -120,3 +135,4 @@ for _, height in floorboard_heights:
 st.write("Plåt, antal och höjd:")
 for height, count in sorted(height_counts.items()):
     st.write(f"{count}x Plåt med höjd = {height:.2f} mm")
+
