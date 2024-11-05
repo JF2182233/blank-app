@@ -41,7 +41,7 @@ if st.button("Calculate Floorboard Heights"):
         # Function remains the same
 
     # Initialize list to store floorboard heights
-    floorboard_heights = []
+        floorboard_heights = []
 
     # Calculate floorboard heights for each slice position
     for i in range(int(vertices[3][0] / slice_width)):
