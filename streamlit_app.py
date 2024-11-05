@@ -5,7 +5,7 @@ import numpy as np
 st.title("Jeppeleppes Takstuvning 🎈")
 
 # Display reference image
-image_url = "https://raw.githubusercontent.com/JF2182233/blank-app/refs/heads/main/cords-tak-3.png"
+image_url = "https://raw.githubusercontent.com/JF2182233/blank-app/refs/heads/main/cords-tak-3.1.png"
 st.image(image_url)
 
 # Input fields for polygon coordinates and slice width
